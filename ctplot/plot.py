@@ -14,6 +14,8 @@ import matplotlib.pyplot as plt
 from utils import get_args_from, isseq, set_defaults, number_mathformat, number_format, hashargs, noop
 from itertools import product
 from locket import lock_file
+from datetime import datetime
+import dateutil.parser
 
 from i18n import _
 from safeeval import safeeval
@@ -27,6 +29,12 @@ eval = safeeval()
 
 
 TableSpecs = namedtuple('TableSpecs', ('title', 'colnames', 'units', 'rows'))
+
+# Helper function to format the timestamps in tables.
+def format_time(timestamp):
+    starttime = dateutil.parser.parse("2010-01-01T00:00:00+0000")
+    starttime = time.mktime(starttime.timetuple())
+    return datetime.fromtimestamp(starttime+timestamp)
 
 def available_tables(d = os.path.dirname(__file__) + '/data'):
     files = []
@@ -143,6 +151,9 @@ stats_abrv = {'n':'N', 'u':'uflow', 'o':'oflow', 'm':'mean', 's':'std', 'p':'mod
 class Plot(object):
     def __init__(self, config , **kwargs):
         log.debug('config %s', json.dumps(config))
+        if ('xs' in kwargs and kwargs['xs'] == 'linear'):
+            kwargs.pop('xs')
+            kwargs.pop('ys')
         log.debug('settings %s', json.dumps(kwargs))
 
         self.config = config
@@ -240,6 +251,7 @@ class Plot(object):
         # create dict: source --> all expr for this source
         # prefilled with empty lists
         expr_data = {}
+        expr_data_new = {}
         joined_cuts = {}  # OR of all cuts
         for n, s in enumerate(self.sr):
             if s:
@@ -250,6 +262,7 @@ class Plot(object):
                     log.debug('{}{}, expr: {}'.format(v, n, expr))
                     if expr:
                         expr_data[s][expr] = []
+                        expr_data_new[expr] = []
                     if v == 'c':
                         if s in joined_cuts:
                             joined_cuts[s] = '{} or ({})'.format(joined_cuts[s], expr)
@@ -269,8 +282,67 @@ class Plot(object):
 
 
         # assing data arrays to x/y/z/c-data fields
+        timebool = False
         for v in ['x', 'y', 'z', 'c', 'xa', 'ya', 'za']:
-            setattr(self, v + 'data', [(expr_data[self.sr[i]][x] if x and self.sr[i] else None) for i, x in enumerate(getattr(self, v))])
+            cleanX = []
+            cleanY = []
+            cleanZ = []
+            for i, x in enumerate(getattr(self, v)):
+                if (x):
+                    if (x == "tsec" or x == "time"):
+                        starttime = 0
+                        last_timestapm = 0
+                        indd = []
+                        for j, timestamp in enumerate(expr_data[self.sr[i]][x]):
+                            if not (np.isnan(timestamp)):
+                                last_timestapm = format_time(timestamp)
+                                expr_data_new[x].append(last_timestapm)
+                            else:
+                                indd.append(j)
+
+                        if (v == "x"):
+                            cleanY = np.delete(expr_data[self.sr[i]][expr_data[self.sr[i]].keys()[0]],indd)
+                            if (len(expr_data[self.sr[i]].keys()) >=3 ):
+                                cleanZ = np.delete(expr_data[self.sr[i]][expr_data[self.sr[i]].keys()[2]],indd)
+
+                        elif (v == "y"):
+                            cleanX = np.delete(expr_data[self.sr[i]][expr_data[self.sr[i]].keys()[0]],indd)
+                            if (len(expr_data[self.sr[i]].keys()) >=3 ):
+                                cleanZ = np.delete(expr_data[self.sr[i]][expr_data[self.sr[i]].keys()[2]],indd)
+                        elif (v == "z"):
+                            cleanX = np.delete(expr_data[self.sr[i]][expr_data[self.sr[i]].keys()[0]],indd)
+                            cleanY = np.delete(expr_data[self.sr[i]][expr_data[self.sr[i]].keys()[1]],indd)
+
+
+
+            for i, x in enumerate(getattr(self, v)):
+                if (all(v is None for v in getattr(self, v))):
+                    setattr(self, v + 'data', [None])
+                if (x and self.sr[i]):
+                    if (x == "tsec" or x == "time"):
+                        timebool = True
+                        if (v == "x"):
+                            setattr(self, "ydata", [cleanY])
+                            if (len(expr_data[self.sr[i]].keys()) >=3 ):
+                                setattr(self, "zdata", [cleanZ])
+                        elif (v == "y"):
+                            setattr(self, "xdata", [cleanX])
+                            if (len(expr_data[self.sr[i]].keys()) >=3 ):
+                                setattr(self, "zdata", [cleanZ])
+                        elif (v == "z"):
+                            setattr(self, "xdata", [cleanX])
+                            setattr(self, "ydata", [cleanY])
+
+                        setattr(self, v + 'data', [(expr_data_new[x])])
+                        break
+
+            else: 
+                if not (timebool): 
+                    for i, x in enumerate(getattr(self, v)):
+                        if (all(v is None for v in getattr(self, v))):
+                            setattr(self, v + 'data', [None])
+                        if (x and self.sr[i] != None):
+                            setattr(self, v + 'data', [(expr_data[self.sr[i]][x])])
             setattr(self, v + 'unit', [(units[self.sr[i]][x] if x and self.sr[i] else None) for i, x in enumerate(getattr(self, v))])
 
         log.debug('source={}'.format(self.s))
@@ -490,6 +562,11 @@ class Plot(object):
 #        plt.gca().set_position([f, f, 1 - 2 * f, 1 - 2 * f])
 #        plt.subplots_adjust(left = f, bottom = f, right = 1 - f, top = 1 - f, wspace = 0, hspace = 0)
         ticks.set_extended_locator(self.__tick_density)
+        myFmt = mpl.dates.DateFormatter('%H:%M / %d.%m.%Y')
+        if (getattr(self, "xunit")[0] == 's'):
+            plt.gca().xaxis.set_major_formatter(myFmt)
+        if (getattr(self, "yunit")[0] == 's'):
+            plt.gca().yaxis.set_major_formatter(myFmt)
         self.axes[''] = plt.gca()
 
 
@@ -504,6 +581,11 @@ class Plot(object):
 
         # settings for main and twin axes
         for v, ax in self.axes.iteritems():
+            # rotating the x labels for better readability
+            if (getattr(self, "xunit")[0] == 's'):
+                plt.setp(ax.get_xticklabels(), rotation=30, horizontalalignment="right")
+            if (getattr(self, "yunit")[0] == 's'):
+                plt.setp(ax.get_yticklabels(), rotation=30, horizontalalignment="right")
             plt.axes(ax)
 
             # grid
@@ -693,7 +775,7 @@ class Plot(object):
         plt.show()
 
 
-    def save(self, name = 'fig', extensions = ('png', 'pdf', 'svg')):
+    def save(self, name = 'fig', extensions = ('png', 'pdf')):
         plt.ioff()
         if not any(self.legend):
             self.plot()
@@ -790,20 +872,40 @@ class Plot(object):
             args = (y,)
 
         if z is None:
+            if 'linestyle' in kwargs:
+                kwargs['linestyle'] = 'none'
+            else:
+                kwargs.update({'linestyle':'none'})
+
+            if 'marker' in kwargs:
+                kwargs['marker'] = '.'
+            else:
+                kwargs.update({'marker':'.'})
+
             l, = plt.plot(*args, **kwargs)
         else:
             # linestyle must not be 'none' when plotting 3D
             if 'linestyle' in kwargs and kwargs['linestyle'] == 'none':
                 kwargs['linestyle'] = ':'
 
-            o = get_args_from(kwargs, markersize = 2, cbfrac = 0.04, cblabel = self.alabel('z'))
-            l = plt.scatter(x, y, c = z, s = o.markersize ** 2, edgecolor = 'none', **kwargs)
-
             m = 6.0
-            dmin, dmax = np.nanmin(z), np.nanmax(z)
-            cticks = ticks.get_ticks(dmin, dmax, m, only_inside = 1)
-            formatter = mpl.ticker.FuncFormatter(func = lambda x, i:number_mathformat(x))
-            cb = plt.colorbar(fraction = o.cbfrac, pad = 0.01, aspect = 40, ticks = cticks, format = formatter)
+            o = get_args_from(kwargs, markersize = 2, cbfrac = 0.04, cblabel = self.alabel('z'))
+            if (isinstance(z[0], datetime)):
+                zz = [mpl.dates.date2num(j) for j in z]
+
+                l = plt.scatter(x, y, c = zz, s = o.markersize ** 2, edgecolor = 'none', **kwargs)
+                dmin, dmax = np.nanmin(zz), np.nanmax(zz)
+                loc = mpl.dates.AutoDateLocator()
+                cticks = ticks.get_ticks(dmin, dmax, m, only_inside = 1)
+                myFmt = mpl.dates.DateFormatter('%H:%M / %d.%m.%Y')
+                cb = plt.colorbar(fraction = o.cbfrac, pad = 0.01, aspect = 40, ticks = loc, format = myFmt)
+            else:
+                dmin, dmax = np.nanmin(z), np.nanmax(z)
+                cticks = ticks.get_ticks(dmin, dmax, m, only_inside = 1)
+                formatter = mpl.ticker.FuncFormatter(func = lambda x, i:number_mathformat(x))
+                l = plt.scatter(x, y, c = z, s = o.markersize ** 2, edgecolor = 'none', **kwargs)
+                cb = plt.colorbar(fraction = o.cbfrac, pad = 0.01, aspect = 40, ticks = cticks, format = formatter)
+
             cb.set_label(o.cblabel)
 
         self.legend.append((l, self.llabel(i)))
@@ -1003,16 +1105,27 @@ class Plot(object):
 
             o = get_args_from(kwargs, markersize = 6, cbfrac = 0.04, cblabel = self.alabel('z'))
             p = set_defaults(kwargs, zorder = 100)
-            l = plt.scatter(x, y, c = z, s = o.markersize ** 2, edgecolor = 'none', **p)
-
+            zz = z
             m = 6.0
-            dmin, dmax = np.nanmin(z), np.nanmax(z)
-            cticks = ticks.get_ticks(dmin, dmax, m, only_inside = 1)
-            formatter = mpl.ticker.FuncFormatter(func = lambda x, i:number_mathformat(x))
-            cb = plt.colorbar(fraction = o.cbfrac, pad = 0.01, aspect = 40, ticks = cticks, format = formatter)
-            cb.set_label(o.cblabel)
+            if (isinstance(z[0], datetime)):
+                zz = [mpl.dates.date2num(j) for j in z]
 
-        self.legend.append((l, self.llabel(i)))
+                l = plt.scatter(x, y, c = zz, s = o.markersize ** 2, edgecolor = 'none', **p)
+                dmin, dmax = np.nanmin(zz), np.nanmax(zz)
+                loc = mpl.dates.AutoDateLocator()
+                myFmt = mpl.dates.DateFormatter('%H:%M / %d.%m.%Y')
+                cb = plt.colorbar(fraction = o.cbfrac, pad = 0.01, aspect = 40, ticks = loc, format = myFmt)
+            else:
+                dmin, dmax = np.nanmin(z), np.nanmax(z)
+                cticks = ticks.get_ticks(dmin, dmax, m, only_inside = 1)
+                formatter = mpl.ticker.FuncFormatter(func = lambda x, i:number_mathformat(x))
+                l = plt.scatter(x, y, c = z, s = o.markersize ** 2, edgecolor = 'none', **p)
+                cb = plt.colorbar(fraction = o.cbfrac, pad = 0.01, aspect = 40, ticks = cticks, format = formatter)
+
+            cb.set_label(o.cblabel)
+            self.legend.append((l, self.llabel(i)))
+
+
 
 
     def stats_fields1d(self, i, data, contents, errors, edges):

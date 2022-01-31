@@ -39,7 +39,18 @@ def get_config():
     _config = {'cachedir':join(basedir, 'cache'),
                'datadir':join(basedir, 'data'),
                'plotdir':join(basedir, 'plots'),
-               'sessiondir':join(basedir, 'sessions')}
+               'sessiondir':join(basedir, 'sessions'),
+               'sessionexdir':join(basedir, 'sessions_ex'),
+               'ex_sessions':['Trigger-Hodoskop',
+                'CosMO-Mill',
+                'LiDO',
+                'Polarstern',
+                'Neumayer',
+                'Sevan',
+                'Wetterdaten-Zeuthen',
+                'Fit-Beispiele',
+                'Luftdruckkorrektur',
+                'CosMO-MuV',]}
 
     for k in _config.keys():
         ek = prefix + k.upper()
@@ -93,28 +104,20 @@ def static_content(environ, start_response):
         start_response('301 Redirect', [content_type(), ('Location', environ['REQUEST_URI'] + '/')])
         return []
 
-    if path == '/':
-        path = 'web/index.html'  # map / to index.html
+    path = path[1:]  # get rid of beginning slash
+
+    if path == '':
+        path = 'de'  # map / to /de
+
+    if path in ['en', 'de']:
+        start_response('200 OK', [('Content-Type', 'text/html')])
+        return resource_string('ctplot', 'static/%s/index.html' % path)
+    elif path.startswith('img/') and not resource_isdir('ctplot', 'static/' + path):
+        start_response('200 OK', [content_type(path)])
+        return resource_string('ctplot', 'static/' + path)
     else:
-        path = ('web/' + path).replace('//', '/')
-
-    if path == 'web/js':  # combined java scripts
-        scripts = {}
-        for s in resource_listdir('ctplot', 'web/js'):
-            scripts[s] = '\n// {}\n\n'.format(s) + resource_string('ctplot', 'web/js/' + s)
-        start_response('200 OK', [content_type('combined.js'), cc_cache])
-        return [scripts[k] for k in sorted(scripts.keys())]
-
-    if not resource_exists('ctplot', path):  # 404
         start_response('404 Not Found', [content_type()])
-        return ['404\n', '{} not found!'.format(path)]
-
-    elif resource_isdir('ctplot', path):  # 403
-        start_response('403 Forbidden', [content_type()])
-        return ['403 Forbidden']
-    else:
-        start_response('200 OK', [content_type(path), cc_cache])
-        return resource_string('ctplot', path)
+        return ['404\n', '%s not found!' % path]
 
 
 
@@ -409,6 +412,7 @@ def handle_action(environ, start_response, config):
     action = fields.getfirst('a')
     datadir = config['datadir']
     sessiondir = config['sessiondir']
+    sessionexdir = config['sessionexdir']
 
     if action in ['plot', 'png', 'svg', 'pdf']:
 
@@ -445,6 +449,7 @@ def handle_action(environ, start_response, config):
     elif action == 'save':
         id = fields.getfirst('id').strip()
         if len(id) < 8: raise RuntimeError('session id must have at least 8 digits')
+        if id in config['ex_sessions']: raise RuntimeError('cannot save to example session')
         data = fields.getfirst('data').strip()
         with open(os.path.join(sessiondir, '{}.session'.format(id)), 'w') as f:
             f.write(data.replace('},{', '},\n{'))
@@ -452,7 +457,9 @@ def handle_action(environ, start_response, config):
 
     elif action == 'load':
         id = fields.getfirst('id').strip()
-        if len(id) < 8: raise RuntimeError('session id must have at least 8 digits')
+        if id in config['ex_sessions']:
+           sessiondir=sessionexdir 
+        elif len(id) < 8: raise RuntimeError('session id must have at least 8 digits')
         try:
             with open(os.path.join(sessiondir, '{}.session'.format(id))) as f:
                 return serve_plain(f.read(), start_response)
