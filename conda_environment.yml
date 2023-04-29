@@ -1,0 +1,16 @@
+name: ctplot
+channels:
+  - defaults
+dependencies:
+  - python=2 
+  - numpy 
+  - scipy 
+  - pandas
+  - matplotlib=2.0.2 
+  - basemap 
+  - pytz 
+  - numexpr 
+  - pytables 
+  - python-dateutil 
+  - Pillow 
+  - locket

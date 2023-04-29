@@ -1,22 +1,52 @@
-FROM ubuntu:14.04
-MAINTAINER software@louisenhof2.de
+FROM ubuntu:22.04
 
 ENV DEBIAN_FRONTEND noninteractive
+ENV PYTHONUNBUFFERED 1
+ENV PYTHONDONTWRITEBYTECODE 1
 
-# adjust the next line, replace nas by you local mirror or comment it out
-#RUN sed -i.save "s/archive.ubuntu.com/nas/g" /etc/apt/sources.list 
+# install updates
+RUN apt-get update && \
+    apt-get upgrade -y &&  \
+    apt-get -y install wget vim && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
-RUN apt-get update && apt-get -y install wget && apt-get clean 
-RUN wget http://repo.continuum.io/archive/Anaconda-2.1.0-Linux-x86_64.sh -O /anaconda
-RUN bash anaconda -b -p /opt/anaconda && rm anaconda
-ENV PATH /opt/anaconda/bin:$PATH
+# install Miniconda3
+RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O /tmp/Miniconda3-latest-Linux-x86_64.sh &&\
+    chmod +x /tmp/Miniconda3-latest-Linux-x86_64.sh && \
+    /tmp/Miniconda3-latest-Linux-x86_64.sh -b -p /opt/miniconda3 && \
+    rm /tmp/Miniconda3-latest-Linux-x86_64.sh
+
+ENV PATH /opt/miniconda3/bin:$PATH
+
+# update base environment
 RUN conda update --yes --all && conda clean --yes --tarballs
 
-RUN conda install --yes seaborn basemap && conda clean --yes --tarballs
-RUN pip install https://github.com/quantenschaum/ctplot/archive/master.zip
+COPY conda_environment.yml /tmp/conda_environment.yml
 
-RUN adduser --disabled-password --gecos '' ctplot 
-USER ctplot 
+# setup ctplot environment
+RUN conda env create -f /tmp/conda_environment.yml && \
+    rm /tmp/conda_environment.yml
 
-EXPOSE 8080
-CMD ["ctserver"]
+# install application
+WORKDIR /app
+COPY . .
+
+# install ctplot package
+RUN conda run -n ctplot --no-capture-output pip install -e .
+
+WORKDIR /
+CMD conda run -n ctplot --no-capture-output python /app/ctplot/webserver.py
+
+#RUN conda install --yes seaborn basemap && conda clean --yes --tarballs
+#RUN pip install https://github.com/quantenschaum/ctplot/archive/master.zip
+#RUN conda run -n ctplot pip install https://github.com/mw10178/202211-mw/archive/refs/tags/2.4.0beta.0.zip
+
+#RUN conda run -n ctplot pip install .
+#WORKDIR /
+#RUN adduser --disabled-password --gecos '' ctplot 
+#USER ctplot 
+
+#EXPOSE 8080
+#CMD ["conda",  "run",  "-n ctplot",  "ctserver"]
+#CMD conda run -n ctplot ctserver
