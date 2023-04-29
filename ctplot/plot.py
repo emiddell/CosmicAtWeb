@@ -20,7 +20,7 @@ import dateutil.parser
 from i18n import _
 from safeeval import safeeval
 
-logging.basicConfig(level = logging.DEBUG, format = '%(filename)s:%(funcName)s:%(lineno)d:%(message)s')
+#logging.basicConfig(level = logging.DEBUG, format = '%(filename)s:%(funcName)s:%(lineno)d:%(message)s')
 
 log = logging.getLogger('plot')
 
@@ -50,13 +50,13 @@ def available_tables(d = os.path.dirname(__file__) + '/data'):
 
     for f in files:
         try:
-            h5 = tables.openFile(f, 'r')
-            for n in h5.walkNodes(classname = 'Table'):
+            h5 = tables.open_file(f, 'r')
+            for n in h5.walk_nodes(classname = 'Table'):
                 tab = f[dirlen+1:] + ':' + n._v_pathname
                 tabs[tab] = TableSpecs(n._v_title, n.colnames, json.loads(n.attrs.units), int(n.nrows))
             h5.close()
-        except:
-            pass
+        except Exception as ex:
+            log.exception(ex)
 
     return tabs
 
@@ -367,8 +367,8 @@ class Plot(object):
             # source s has form 'filename:/path/to/table'
             # open HDF5 table
             ss = s.strip().split(':')
-            with tables.openFile(ss[0], 'r') as h5:
-                table = h5.getNode(ss[1])
+            with tables.open_file(ss[0], 'r') as h5:
+                table = h5.get_node(ss[1])
                 window = float(eval(ss[2])) if ss[2] != 'None' else None
                 shift = float(ss[3]) if ss[3] != 'None' else 1
                 weight = ss[4] if ss[4] != 'None' else None
@@ -411,8 +411,8 @@ class Plot(object):
                     def average_cached():
                         if not self.config['cachedir']:
                             raise  # always fail it cache is disabled
-                        with tables.openFile(cachefile) as cacheh5:
-                            cachetable = cacheh5.getNode('/data')
+                        with tables.open_file(cachefile) as cacheh5:
+                            cachetable = cacheh5.get_node('/data')
                             progr_factor = 1.0 / cachetable.nrows / len(expr_data)
                             log.info('reading averaged data from cache')
                             for row in cachetable.iterrows():
@@ -423,7 +423,7 @@ class Plot(object):
                     def average_computed():
                         try:
                             log.debug('creating averaged data cachefile')
-                            cacheh5 = tables.openFile(cachefile, 'w')
+                            cacheh5 = tables.open_file(cachefile, 'w')
                         except:
                             log.exception('failed opening %s', cachefile)
                             raise RuntimeError('cache for {} in use or corrupt, try again in a few seconds'.format(s))

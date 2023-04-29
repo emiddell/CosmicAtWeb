@@ -36,15 +36,15 @@ def _printinfo(t):
 def merge(primary_file, secondary_file = None, outfile = None, primary_table = None, secondary_table = None, merge_on = 'time', max_inter = 4 * 3600, quiet = False):
     # open data file(s)
     if outfile is None:
-        h5pri = h5out = t.openFile(primary_file, 'r+')
+        h5pri = h5out = t.open_file(primary_file, 'r+')
     else:
-        h5pri = t.openFile(primary_file, 'r')
-        h5out = t.openFile(outfile, 'w')
+        h5pri = t.open_file(primary_file, 'r')
+        h5out = t.open_file(outfile, 'w')
 
     if secondary_file is None or os.path.abspath(primary_file) == os.path.abspath(secondary_file):
         h5sec = h5pri
     else:
-        h5sec = t.openFile(secondary_file, 'r')
+        h5sec = t.open_file(secondary_file, 'r')
 
     with h5pri, h5sec, h5out:
 

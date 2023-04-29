@@ -849,7 +849,7 @@ def raw_to_h5(filenames, out = "out.h5", handlers = available_handlers,
 
     # create HDF5 file
     filters = t.Filters(complevel = 1, complib = 'zlib')
-    with t.openFile(out, 'w', 'datafile created with raw_to_h5', filters = filters) as h5:
+    with t.open_file(out, 'w', 'datafile created with raw_to_h5', filters = filters) as h5:
         h5.root._v_attrs.creationdate = dt.datetime.now(pytz.utc).isoformat()
         raw = h5.createGroup(h5.root, 'raw', 'raw data')
 

@@ -25,7 +25,7 @@ from copy import deepcopy
 from i18n import _
 from safeeval import safeeval
 
-logging.basicConfig(level = logging.DEBUG, format = '%(filename)s:%(funcName)s:%(lineno)d:%(message)s')
+#logging.basicConfig(level = logging.DEBUG, format = '%(filename)s:%(funcName)s:%(lineno)d:%(message)s')
 log = logging.getLogger('validation')
 
 class ValidationError(Exception):
