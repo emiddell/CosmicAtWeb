@@ -27,7 +27,9 @@ let example_sessions =
     'Wetterdaten-Zeuthen',
     'Fit-Beispiele',
     'Luftdruckkorrektur']
-;(function ($) {
+;
+
+(function ($) {
   "use strict";
 
     var speed = 'fast',
@@ -81,6 +83,55 @@ let example_sessions =
         }
     }
 
+    /** return only those dataset option elements that match selected_experiment */
+    function getAvailableDatasetOptions(selected_experiment) {
+        var options = [
+            $('<option>').val('').text('{{choose dataset placeholder}}')
+        ];
+
+        $.ajax({
+            async : false,
+            data : {
+                a : 'list'
+            },
+            success : function(data) {
+                $.each(data, function(id, info) {
+                    // console.debug(id+' -- '+info);
+                    var m = id.match(/(.*):(.*)/);
+                    
+                    // filename incl. path
+                    var file = m[1];
+                    // filename only, w/o path and extension
+                    var filename = file.match(/(.*)\/(.+)\.h5/i)[2];
+                    // name of the table
+                    var tabname = m[2];
+                    var experiment = file.match(/(.*?)\/.+?/)[1];
+
+                    if (experiment != selected_experiment)
+                        return;
+                    
+                    var option_text = filename + ' - ' + info[0];
+                    var option_value = id;
+
+                    var opt = $('<option>').text(option_text).val(option_value);
+                    opt.addClass('ex-' + experiment);
+                    
+                    if (option_text.startsWith('x'))
+                        opt.addClass('expert');
+
+                    options.push(opt);
+                });
+            },
+            error : function(xhr, text, error) {
+                alert(xhr['responseText']);
+            }
+        });
+
+        return $(options);
+    }
+
+
+
     /** get available HDF5 from server and return new DOM element */
     function sourcesBox() {
         console.debug('* sourcesbox');
@@ -119,7 +170,7 @@ let example_sessions =
                     opt.addClass('ex-' + experiment);
                     if (experimentbox.find('option').filter(function() {
                         return $(this).text() == experiment;
-                    }).size() < 1) {
+                    }).length < 1) {
                         var ex = $('<option>').text(experiment).val(experiment).appendTo(experimentbox);
                         if (experiment.startsWith('x'))
                             ex.addClass('expert');
@@ -175,17 +226,39 @@ let example_sessions =
     }
 
     function hide(s) {
-        console.debug('* hide '+s);
+        //console.debug('* hide ' + s.length + ' elements');
         var s = $(s);
-        s.hide(speed).find(':input').prop('disabled', true);
+        s.hide(speed).find(':input').attr('disabled', 'disabled');
         return s;
     }
 
     function show(s) {
-        console.debug('* show '+s);
+        //console.debug('* show ' + s.length + ' elements');
         var s = $(s);
-        s.show(speed).find(':input').prop('disabled', false);
+        s.show(speed).find(':input').removeAttr('disabled');
         return s;
+    }
+
+    function updateDatasetFields(plot) {
+        var plot = $(plot);
+
+        // experiment/dataset
+        var experiment = '' + plot.find(':input[name^="experiment"]').val();
+        if (experiment.match(/\s+/))
+            experiment = '';
+
+        var dataset_select = plot.find("select[name^='s']");
+        if (dataset_select.length > 0) {
+            // clear existing options from dataset select
+            dataset_select.find("option").remove();
+
+            // fill only dataset options for the selected experiment
+            var available_options = getAvailableDatasetOptions(experiment);
+            available_options.each(function(i, opt) {
+                opt.appendTo(dataset_select);
+            });
+            }
+
     }
 
     /** disable/enable fields according to detaillevel and plotmode */
@@ -214,7 +287,7 @@ let example_sessions =
         $.each(['x', 'y'], function(i, v) {
             var twinv = $('.twin' + v);
             visible = visible.add(twinv);
-            if ($(':input[name^="tw"] option:selected[value="' + v + '"]').size() == 0) {
+            if ($(':input[name^="tw"] option:selected[value="' + v + '"]').length == 0) {
                 hidden = hidden.add(twinv);
             }
         });
@@ -229,20 +302,11 @@ let example_sessions =
             console.debug('plotmode=' + plotmode);
             visible = visible.add(options);
             hidden = hidden.add(options.not(plotmode));
-
-            // experiment/dataset
-            var experiment = '' + plot.find(':input[name^="experiment"]').val();
-            console.debug('experiment=' + experiment);
-            if (experiment.match(/\s+/))
-                experiment = '';
-            console.debug('experiment=' + experiment);
-            var datasets = plot.find('option[class*="ex-"]');
-            visible = visible.add(datasets);
-            hidden = hidden.add(datasets.not('.ex-' + experiment));
         });
 
         visible = visible.not(hidden);
-        console.debug('visible=' + visible.size() + ' hidden=' + hidden.size());
+        console.debug('visible=' + visible.length + ' hidden=' + hidden.length);
+
         show(visible);
         hide(hidden);
     }
@@ -371,6 +435,7 @@ let example_sessions =
             $(this).parents('.datasetselector')
               .find(':input[name^="s"] option:first')
               .prop('selected', true);
+            updateDatasetFields(plot);
             updateAxisVarsDropdowns(plot);
         });
 
@@ -510,7 +575,7 @@ let example_sessions =
         var newPlot,
             plots = $('.plot');
 
-        if (plots.size() == 0) {
+        if (plots.length == 0) {
             newPlot = templatePlot.clone()
         } else {
             newPlot = plots.first().clone();
@@ -644,7 +709,7 @@ let example_sessions =
     }
 
     function checkSavedPlotsAvail() {
-        var savedPlots = $('#savedplots .savedplot').size();
+        var savedPlots = $('#savedplots .savedplot').length;
 
         if (savedPlots > 0) {
             $('#nosavedplots').hide();
@@ -906,12 +971,16 @@ let example_sessions =
                     // $('<img>').attr('src', 'img/disk.png').prependTo(saveButton);
 
                     // plot settings
+                    
+                    /*
+                    // EM. disabled settings textbox
                     container.append('<h2>{{settings of this diagram}}</h2>');
                     container.append('<p>{{export to another session explanation % <a class="scrollto" href="#loadsettings">,</a>}}</p>');
                     jsonSettings = JSON.stringify(settings);
                     p = $('<p>').appendTo(container);
                     $('<textarea id="plotsettings">').text(jsonSettings).appendTo(p);
-/*
+                    */
+                    /*
                     // plot url
                     container.append('<h2>{{embed into website}}</h2>');
                     container.append('<p>{{embed into website explanation}}</p>');
@@ -930,7 +999,7 @@ let example_sessions =
 
                     // scroll to plot section
                     $('nav a[href="#output"]').click();
-*/
+                    */
                 },
                 error : function(xhr, text, error) {
                     var errorbox = $('<div class="errorbox">');

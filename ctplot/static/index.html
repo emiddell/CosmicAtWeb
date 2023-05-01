@@ -31,8 +31,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         /*{{INSERT css/style.css}}*/
         /*{{INSERT css/tutorial.css}}*/
     </style>
-    <script>/*{{INSERT js/browser-update.js}}*/</script>
-    <script>/*{{INSERT js/jquery.js}}*/</script>
+    <script>/*{{INSERT js/jquery-3.6.4.min.js}}*/</script>
+    <!-- <script>/*{{INSERT js/jquery-migrate-3.4.0.js}}*/</script> -->
     <script>/*{{INSERT js/jquery.smooth-scroll.js}}*/</script>
     <script>/*{{INSERT js/jquery.cookie.js}}*/</script>
     <script>/*{{INSERT js/jquery.colorbox.js}}*/</script>
@@ -536,16 +536,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             </div>
             <div id="error"></div>
         </div>
-        <div id="saved">
-            <h1>{{stored diagrams}}</h1>
-            <p>
-                {{stored diagrams explanation % <i class="fa fa-repeat fa-lg icon-green"></i>,<i class="del-btn inverse text"></i>}}
-            </p>
-            <p id="nosavedplots">
-                {{no saved diagrams}}
-            </p>
-            <div id="savedplots"></div>
-        </div>
+
         <div id="session">
             <h1>Session ID</h1>
             <p>{{session explanation}}</p>
@@ -579,6 +570,55 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             </ul>
             <p>{{example diagrams explanation bottom}}</p>
         </div>
+
+
+        <div id="saved">
+            <h1>{{stored diagrams}}</h1>
+            <p>
+                {{stored diagrams explanation % <i class="fa fa-repeat fa-lg icon-green"></i>,<i class="del-btn inverse text"></i>}}
+            </p>
+            <p id="nosavedplots">
+                {{no saved diagrams}}
+            </p>
+            <div id="savedplots"></div>
+        </div>
+        
+        <!--
+        <div id="session">
+            <h1>Session ID</h1>
+            <p>{{session explanation}}</p>
+            <label>Session-ID
+                <input type="text" id="sessionid">
+            </label>
+            <button class="btn" type="button" id="newid">
+                <i class="fa fa-refresh"></i>
+                {{new id}}
+            </button>
+            <button class="btn" type="button" id="loadid">
+                <i class="fa fa-upload"></i>
+                {{load session}}
+            </button>
+            <p>{{custom session id explanation}}</p>
+            <p>{{add to session explanation}}</p>
+            <p>{{save session id}}</p>
+            <p>{{load session explanation}}</p>
+            <h1>{{example diagrams}}</h1>
+            <p>{{example diagrams explanation top}}</p>
+            <ul>
+		<li><a href="#saved" class="serveExample">Trigger-Hodoskop</a></li>
+		<li><a href="#saved" class="serveExample">CosMO-Muehle</a></li>
+		<li><a href="#saved" class="serveExample">LiDO-Experiment</a></li>
+		<li><a href="#saved" class="serveExample">Polarstern</a></li>
+		<li><a href="#saved" class="serveExample">Neumayer</a></li>
+		<li><a href="#saved" class="serveExample">SEVAN-Experimente</a></li>
+		<li><a href="#saved" class="serveExample">Wetterdaten-Zeuthen</a></li>
+		<li><a href="#saved" class="serveExample">Fit-Beispiele</a></li>
+		<li><a href="#saved" class="serveExample">Luftdruckkorrektur</a></li>
+            </ul>
+            <p>{{example diagrams explanation bottom}}</p>
+        </div>
+        -->
+        <!--
         <div id="loadsettings">
             <h1>{{load settings}}</h1>
             <p>{{load settings explanation}}</p>
@@ -592,6 +632,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 </button>
             </p>
         </div>
+        -->
     </div>
     <footer>
         &copy; 2010 &ndash; 2022, Deutsches Elektronen-Synchrotron
