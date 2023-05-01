@@ -7,7 +7,7 @@ ENV PYTHONDONTWRITEBYTECODE 1
 # install updates
 RUN apt-get update && \
     apt-get upgrade -y &&  \
-    apt-get -y install wget vim && \
+    apt-get -y install wget vim git && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -33,20 +33,7 @@ WORKDIR /app
 COPY . .
 
 # install ctplot package
-RUN conda run -n ctplot --no-capture-output pip install -e .
+RUN conda run -n ctplot --no-capture-output pip install .
 
 WORKDIR /
 CMD conda run -n ctplot --no-capture-output python /app/ctplot/webserver.py
-
-#RUN conda install --yes seaborn basemap && conda clean --yes --tarballs
-#RUN pip install https://github.com/quantenschaum/ctplot/archive/master.zip
-#RUN conda run -n ctplot pip install https://github.com/mw10178/202211-mw/archive/refs/tags/2.4.0beta.0.zip
-
-#RUN conda run -n ctplot pip install .
-#WORKDIR /
-#RUN adduser --disabled-password --gecos '' ctplot 
-#USER ctplot 
-
-#EXPOSE 8080
-#CMD ["conda",  "run",  "-n ctplot",  "ctserver"]
-#CMD conda run -n ctplot ctserver
