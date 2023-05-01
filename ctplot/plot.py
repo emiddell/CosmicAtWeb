@@ -248,13 +248,13 @@ class Plot(object):
     def _prepare_data(self):
         # create dict: source --> all expr for this source
         # prefilled with empty lists
-        expr_data = {}
-        expr_data_new = {}
-        joined_cuts = {}  # OR of all cuts
+        expr_data = OrderedDict() # {}
+        expr_data_new = OrderedDict() # {}
+        joined_cuts = OrderedDict() # {}  # OR of all cuts
         for n, s in enumerate(self.sr):
             if s:
                 if s not in expr_data:
-                    expr_data[s] = {}  #  add dict for every unique source s (plot n)
+                    expr_data[s] = OrderedDict()  #  add dict for every unique source s (plot n)
                 for v in ['x', 'y', 'z', 'c', 'xa', 'ya', 'za']:
                     expr = getattr(self, v)[n]  # x/y/z/c expression for source s (plot n)
                     log.debug('{}{}, expr: {}'.format(v, n, expr))
