@@ -19,9 +19,7 @@ import validation
 from utils import hashargs
 from i18n import _
 
-logging.basicConfig(level = logging.DEBUG, format = '%(filename)s:%(funcName)s:%(lineno)d:%(message)s')
-
-log = logging.getLogger('wsgi')
+log = logging.getLogger('ctplot')
 
 _config = None
 

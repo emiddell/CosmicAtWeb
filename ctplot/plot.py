@@ -20,9 +20,7 @@ import dateutil.parser
 from i18n import _
 from safeeval import safeeval
 
-#logging.basicConfig(level = logging.DEBUG, format = '%(filename)s:%(funcName)s:%(lineno)d:%(message)s')
-
-log = logging.getLogger('plot')
+log = logging.getLogger('ctplot')
 
 # override eval by safe version
 eval = safeeval()
