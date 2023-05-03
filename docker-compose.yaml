@@ -4,10 +4,8 @@ services:
   app:
     build:
       context: .
-    #command: bash -c 'conda run -n ctplot ctserver'
-    #command: conda run -n ctplot --no-capture-output python /app/ctplot/webserver.py
     volumes:
-      - /home/eike/Projekte/cosmicatweb/data/ctplot/ctplot:/data
+      - ../data/ctplot/ctplot:/data
       - .:/app/
     ports:
       - 0.0.0.0:8080:8080
