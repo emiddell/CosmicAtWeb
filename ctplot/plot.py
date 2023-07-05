@@ -299,13 +299,12 @@ class Plot(object):
                                 indd.append(j)
 
                         if (v == "x"):
-                            cleanY = np.delete(expr_data[self.sr[i]][expr_data[self.sr[i]].keys()[0]],indd)
+                            cleanY = np.delete(expr_data[self.sr[i]][expr_data[self.sr[i]].keys()[1]],indd)
                             if (len(expr_data[self.sr[i]].keys()) >=3 ):
                                 cleanZ = np.delete(expr_data[self.sr[i]][expr_data[self.sr[i]].keys()[2]],indd)
 
                         elif (v == "y"):
-                            cleanX = np.delete(expr_data[self.sr[i]][expr_data[self.sr[i]].keys()[1]],indd)
-                            #cleanX = np.delete(expr_data[self.sr[i]][expr_data[self.sr[i]].keys()[0]],indd)   #### mw 20221113
+                            cleanX = np.delete(expr_data[self.sr[i]][expr_data[self.sr[i]].keys()[0]],indd)
                             if (len(expr_data[self.sr[i]].keys()) >=3 ):
                                 cleanZ = np.delete(expr_data[self.sr[i]][expr_data[self.sr[i]].keys()[2]],indd)
                         elif (v == "z"):
@@ -864,6 +863,10 @@ class Plot(object):
         log.debug('xy plot of {}'.format([getattr(self, v)[i] for v in 'sxyzc']))
         kwargs = self.opts(i)
         x, y, z = self.data(i)
+
+        #log.debug(x)
+        #log.debug(y)
+        #log.debug(z)
 
         if x is not None:
             args = (x, y)
