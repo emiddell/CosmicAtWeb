@@ -972,7 +972,7 @@ let example_sessions =
 
                     // plot settings - add URL to plot settings
                     jsonSettings = JSON.stringify(settings);
-                    var currentUrl = window.location.href;
+                    var currentUrl = window.location.pathname;
                     plotUrl = currentUrl.substr(0, currentUrl.lastIndexOf('/')) + '/plot?' + query.replace(/a=plot/, 'a=png');
                     
                     // store settings in cookie
