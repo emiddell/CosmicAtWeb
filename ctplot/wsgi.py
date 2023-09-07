@@ -458,7 +458,9 @@ def handle_action(environ, start_response, config):
            sessiondir=sessionexdir 
         elif len(id) < 8: raise RuntimeError('session id must have at least 8 digits')
         try:
-            with open(os.path.join(sessiondir, '{}.session'.format(id))) as f:
+            fname = os.path.join(sessiondir, '{}.session'.format(id))
+            log.debug("loading session from %s", fname)
+            with open(fname) as f:
                 return serve_plain(f.read(), start_response)
         except:
             return serve_json('no data for {}'.format(id), start_response)
