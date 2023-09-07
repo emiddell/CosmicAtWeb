@@ -970,36 +970,34 @@ let example_sessions =
 
                     // $('<img>').attr('src', 'img/disk.png').prependTo(saveButton);
 
-                    // plot settings
-                    
-                    /*
-                    // EM. disabled settings textbox
-                    container.append('<h2>{{settings of this diagram}}</h2>');
-                    container.append('<p>{{export to another session explanation % <a class="scrollto" href="#loadsettings">,</a>}}</p>');
+                    // plot settings - add URL to plot settings
                     jsonSettings = JSON.stringify(settings);
-                    p = $('<p>').appendTo(container);
-                    $('<textarea id="plotsettings">').text(jsonSettings).appendTo(p);
-                    */
-                    /*
-                    // plot url
-                    container.append('<h2>{{embed into website}}</h2>');
-                    container.append('<p>{{embed into website explanation}}</p>');
-                    // strip stuff like /index.html from current url and append plot url
                     var currentUrl = window.location.href;
                     plotUrl = currentUrl.substr(0, currentUrl.lastIndexOf('/')) + '/plot?' + query.replace(/a=plot/, 'a=png');
-
-                    p = $('<p>').appendTo(container);
-                    $('<textarea id="ploturl">').text('<img src="' + plotUrl + '" />').appendTo(p);
-
+                    
                     // store settings in cookie
                     $.extend(settings, data);
 
                     // append plot image urls to
                     settings['url'] = plotUrl;
 
+
+                    // EM disabled session-json textfield
+                    //container.append('<h2>{{settings of this diagram}}</h2>');
+                    //container.append('<p>{{export to another session explanation % <a class="scrollto" href="#loadsettings">,</a>}}</p>');
+                    //p = $('<p>').appendTo(container);
+                    //$('<textarea id="plotsettings">').text(jsonSettings).appendTo(p);
+                    //container.append('<h2>{{embed into website}}</h2>');
+                    //container.append('<p>{{embed into website explanation}}</p>');
+                    // strip stuff like /index.html from current url and append plot url
+                    //p = $('<p>').appendTo(container);
+                    //$('<textarea id="ploturl">').text('<img src="' + plotUrl + '" />').appendTo(p);
+
+                    
+
                     // scroll to plot section
                     $('nav a[href="#output"]').click();
-                    */
+                    
                 },
                 error : function(xhr, text, error) {
                     var errorbox = $('<div class="errorbox">');
