@@ -5,7 +5,7 @@ services:
     build:
       context: .
     volumes:
-      - ../data/ctplot/ctplot:/data
+      - ../data:/data
       - .:/app/
     ports:
       - 0.0.0.0:8080:8080
