@@ -282,6 +282,8 @@ class Plot(object):
         # assing data arrays to x/y/z/c-data fields
         timebool = False
         for v in ['x', 'y', 'z', 'c', 'xa', 'ya', 'za']:
+            setattr(self, v + 'data', [(expr_data[self.sr[i]][x] if x and self.sr[i] else None) for i, x in enumerate(getattr(self, v))])
+            """
             cleanX = []
             cleanY = []
             cleanZ = []
@@ -341,6 +343,7 @@ class Plot(object):
                             setattr(self, v + 'data', [None])
                         if (x and self.sr[i] != None):
                             setattr(self, v + 'data', [(expr_data[self.sr[i]][x])])
+            """
             setattr(self, v + 'unit', [(units[self.sr[i]][x] if x and self.sr[i] else None) for i, x in enumerate(getattr(self, v))])
 
         log.debug('source={}'.format(self.s))
@@ -670,6 +673,7 @@ class Plot(object):
 
 
     def data(self, i):
+        log.debug("data: self.xdata {s}", str(self.xdata))
         x, y, z, c = self.xdata[i], self.ydata[i], self.zdata[i], self.cdata[i]
         xa, ya, za = self.xadata[i], self.yadata[i], self.zadata[i]
 
