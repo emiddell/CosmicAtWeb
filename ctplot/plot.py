@@ -32,7 +32,22 @@ TableSpecs = namedtuple('TableSpecs', ('title', 'colnames', 'units', 'rows'))
 def format_time(timestamp):
     starttime = dateutil.parser.parse("2010-01-01T00:00:00+0000")
     starttime = time.mktime(starttime.timetuple())
-    return datetime.fromtimestamp(starttime+timestamp)
+    try:
+        dt = datetime.fromtimestamp(starttime+timestamp)
+    except ValueError:
+        log.error("couldn't convert timestamp %f.", timestamp)
+        raise
+    return dt
+
+def format_times(timestamps):
+    starttime = dateutil.parser.parse("2010-01-01T00:00:00+0000")
+    starttime = time.mktime(starttime.timetuple())
+    timestamps = starttime + np.asarray(timestamps)
+    
+    if not np.isfinite(timestamps).all():
+        raise ValueError("encountered non-finite timestamps. Input data needs cleaning.")
+
+    return [datetime.fromtimestamp(ts) for ts in timestamps]
 
 def available_tables(d = os.path.dirname(__file__) + '/data'):
     files = []
@@ -279,71 +294,26 @@ class Plot(object):
         log.debug(units)
 
 
-        # assing data arrays to x/y/z/c-data fields
-        timebool = False
+        # passing data arrays to x/y/z/c-data fields
         for v in ['x', 'y', 'z', 'c', 'xa', 'ya', 'za']:
-            setattr(self, v + 'data', [(expr_data[self.sr[i]][x] if x and self.sr[i] else None) for i, x in enumerate(getattr(self, v))])
-            """
-            cleanX = []
-            cleanY = []
-            cleanZ = []
-            for i, x in enumerate(getattr(self, v)):
-                if (x):
-                    if (x == "tsec" or x == "time"):
-                        starttime = 0
-                        last_timestapm = 0
-                        indd = []
-                        for j, timestamp in enumerate(expr_data[self.sr[i]][x]):
-                            if not (np.isnan(timestamp)):
-                                last_timestapm = format_time(timestamp)
-                                expr_data_new[x].append(last_timestapm)
-                            else:
-                                indd.append(j)
+            vdata = []
+            for i_datarow, varname in enumerate(getattr(self, v)):
+                if varname and self.sr[i_datarow]:
+                    data = expr_data[self.sr[i_datarow]][varname]
 
-                        if (v == "x"):
-                            cleanY = np.delete(expr_data[self.sr[i]][expr_data[self.sr[i]].keys()[1]],indd)
-                            if (len(expr_data[self.sr[i]].keys()) >=3 ):
-                                cleanZ = np.delete(expr_data[self.sr[i]][expr_data[self.sr[i]].keys()[2]],indd)
+                    # data files store timestamps as seconds since 2010-01-01. convert to datetimes
+                    if varname in ["tsec", "time"]:
+                        t1 = time.time()
+                        data = format_times(data)
+                        t2 = time.time()
+                        log.debug("converting timestamps took %.3f seconds. Range %s - %s", t2-t1, data[0], data[-1])
 
-                        elif (v == "y"):
-                            cleanX = np.delete(expr_data[self.sr[i]][expr_data[self.sr[i]].keys()[0]],indd)
-                            if (len(expr_data[self.sr[i]].keys()) >=3 ):
-                                cleanZ = np.delete(expr_data[self.sr[i]][expr_data[self.sr[i]].keys()[2]],indd)
-                        elif (v == "z"):
-                            cleanX = np.delete(expr_data[self.sr[i]][expr_data[self.sr[i]].keys()[0]],indd)
-                            cleanY = np.delete(expr_data[self.sr[i]][expr_data[self.sr[i]].keys()[1]],indd)
+                    vdata.append( data )
+                else:
+                    vdata.append( None)
+                
+            setattr(self, v + 'data', vdata)
 
-
-
-            for i, x in enumerate(getattr(self, v)):
-                if (all(v is None for v in getattr(self, v))):
-                    setattr(self, v + 'data', [None])
-                if (x and self.sr[i]):
-                    if (x == "tsec" or x == "time"):
-                        timebool = True
-                        if (v == "x"):
-                            setattr(self, "ydata", [cleanY])
-                            if (len(expr_data[self.sr[i]].keys()) >=3 ):
-                                setattr(self, "zdata", [cleanZ])
-                        elif (v == "y"):
-                            setattr(self, "xdata", [cleanX])
-                            if (len(expr_data[self.sr[i]].keys()) >=3 ):
-                                setattr(self, "zdata", [cleanZ])
-                        elif (v == "z"):
-                            setattr(self, "xdata", [cleanX])
-                            setattr(self, "ydata", [cleanY])
-
-                        setattr(self, v + 'data', [(expr_data_new[x])])
-                        break
-
-            else: 
-                if not (timebool): 
-                    for i, x in enumerate(getattr(self, v)):
-                        if (all(v is None for v in getattr(self, v))):
-                            setattr(self, v + 'data', [None])
-                        if (x and self.sr[i] != None):
-                            setattr(self, v + 'data', [(expr_data[self.sr[i]][x])])
-            """
             setattr(self, v + 'unit', [(units[self.sr[i]][x] if x and self.sr[i] else None) for i, x in enumerate(getattr(self, v))])
 
         log.debug('source={}'.format(self.s))
@@ -673,7 +643,7 @@ class Plot(object):
 
 
     def data(self, i):
-        log.debug("data: self.xdata {s}", str(self.xdata))
+        #log.debug("data: self.xdata %s", str(self.xdata))
         x, y, z, c = self.xdata[i], self.ydata[i], self.zdata[i], self.cdata[i]
         xa, ya, za = self.xadata[i], self.yadata[i], self.zadata[i]
 
