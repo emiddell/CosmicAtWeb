@@ -47,7 +47,7 @@ def format_times(timestamps):
     if not np.isfinite(timestamps).all():
         raise ValueError("encountered non-finite timestamps. Input data needs cleaning.")
 
-    return [datetime.fromtimestamp(ts) for ts in timestamps]
+    return np.asarray([datetime.fromtimestamp(ts) for ts in timestamps])
 
 def available_tables(d = os.path.dirname(__file__) + '/data'):
     files = []
