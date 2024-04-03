@@ -504,6 +504,7 @@ let example_sessions =
                 } else {
                     field.val(v);
                 }
+                field.change();
             }
         });
 
