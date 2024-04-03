@@ -993,7 +993,7 @@ class Plot(object):
 
         if 'color' in o.style:
             pargs = set_defaults(kwargs, cmap = 'jet', edgecolor = 'none')
-            plt.pcolor(xedges, yedges, ma.array(bincontents, mask = np.isnan(bincontents)), **kwargs)
+            plt.pcolor(xedges, yedges, ma.array(bincontents, mask = np.isnan(bincontents)), **pargs)
 
         elif 'box' in o.style:
             pargs = set_defaults(kwargs, color = (1, 1, 1, 0), marker = 's', edgecolor = 'k')
