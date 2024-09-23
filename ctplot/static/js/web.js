@@ -59,30 +59,6 @@ let example_sessions =
         }
     }
 
-    /** display warning if unsupported browser is used */
-    function checkBrowserSupport() {
-        var body = $('body'),
-          supported = false;
-
-        /* Chromium/Google Chrome */
-        if (navigator.userAgent.indexOf('Safari') > -1 && 
-            navigator.userAgent.indexOf('Chrome') > -1) 
-        {
-            supported = true;
-            body.addClass('chrome');
-        /* Mozilla Firefox */
-        } else if (navigator.userAgent.indexOf('Firefox') > -1) {
-            supported = true;
-            body.addClass('firefox');
-        }
-
-        if (supported) {
-            $('#browser-warning').remove();
-        } else {
-            $('#browser-warning').show();
-        }
-    }
-
     /** return only those dataset option elements that match selected_experiment */
     function getAvailableDatasetOptions(selected_experiment) {
         var options = [
@@ -1048,7 +1024,6 @@ let example_sessions =
     /** on page load... */
     $(function() {
         console.debug('* main');
-        checkBrowserSupport();
         initScroll();
         initHelp('fieldset.global');
         initHelp('fieldset.global2');
