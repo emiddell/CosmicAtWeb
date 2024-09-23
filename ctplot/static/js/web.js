@@ -992,6 +992,12 @@ let example_sessions =
 
             return false;
         });
+
+        $('form').on('reset', function(e) {
+            console.debug("deleting settings");
+            simpleStorage.deleteKey('settings');
+        });
+
     }
 
     function createInternalLink(href, text) {
