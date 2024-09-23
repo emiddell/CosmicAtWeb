@@ -226,26 +226,23 @@ Diagram,Diagramm,tut head 10
 "When you don\'t know what the axis show, check what is contained in the dataset. In this example the time in seconds (time[s]) since the 01/01/2010 are shown on the X-axis. More informations to conversions can be found under the <a href=https://www.desy.de/school/school_lab/zeuthen_site/cosmic_particles/index_eng.html>datastructure</a>","Wenn dir nicht klar ist, was auf den Achsen abgetragen ist, prüfe zunächst, was im Datensatz enthalten ist. So wird in diesem Fall die Zeit in Sekunden (time[s]) ab dem 01.01.2010 angegeben. Weitere Informationen zur Umrechnung findest du unter der <a href=http://www.desy.de/schule/schuelerlabore/standort_zeuthen/kosmische_teilchen/glossar/index_ger.html?selected=Z#_zeitumrechnung>Datenstruktur</a>.",tut expl 10
 ,,tut task 10
 Save Diagram,Diagramm speichern,tut head 11
-"There are multiple ways to save diagrams for later use: <ol><li>One possibility is to download it as pdf or png.</li></ol>","Es gibt mehrere Möglichkeiten, Diagramme speichern und wieder aufrufen zu können: <ol><li> Eine Möglichkeit ist es, sich die Diagramme in den Formaten ""pdf oder png"" herunterzuladen.</li></ol>",tut expl 11
+"There are multiple ways to save diagrams for later use: <ol><li>One possibility is to download it as a png.</li></ol>","Es gibt mehrere Möglichkeiten, Diagramme speichern und wieder aufrufen zu können: <ol><li> Eine Möglichkeit ist es, sich die Diagramme in dem Format ""png"" herunterzuladen.</li></ol>",tut expl 11
 ,,tut task 11
 Save Diagram,Diagramm speichern,tut head 12
-"There are multiple ways to save diagrams for later use:<ol><li>One possibility is to download it as pdf or png.</li><li>By saving the settings as txt file and loading it through ""load settings""</li><ol>","Es gibt mehrere Möglichkeiten, Diagramme speichern und wieder aufrufen zu können: <ol><li>Eine Möglichkeit ist es, sich die Diagramme in den Formaten ""pdf oder png"" herunterzuladen.</li><li>Indem man die hier dargestellten Einstellungen beispielsweise als externe Textdatei speichert, kann man durch Kopieren in das untere Feld das Diagramm erneut laden.</li></ol>",tut expl 12
+"There are multiple ways to save diagrams for later use:<ol><li>One possibility is to download it as a png.</li><li>With the help of the Session-ID, which will be explained in the next step</li></ol>","Es gibt mehrere Möglichkeiten, Diagramme speichern und wieder aufrufen zu können: <ol><li>Eine Möglichkeit ist es, sich die Diagramme in dem Format ""png"" herunterzuladen.</li><li>Mithilfe der Session-ID, welche das Tutorial in den nächsten Schritten erklären wird.</li></ol>",tut expl 12
 ,,tut task 12
-Save Diagram,Diagramm speichern,tut head 13
-"There are multiple ways to save diagrams for later use:<ol><li>One possibility is to download it as pdf or png.</li><li>By saving the settings as txt file and loading it through ""load settings"".</li><li>With the help of the Session-ID, which will be explained in the next step</li></ol>","Es gibt mehrere Möglichkeiten, Diagramme speichern und wieder aufrufen zu können: <ol><li>Eine Möglichkeit ist es, sich die Diagramme in den Formaten ""pdf oder png"" herunterzuladen.</li><li>Indem man die hier dargestellten Einstellungen beispielsweise als externe Textdatei speichert, kann man durch kopieren in das untere Feld das Diagramm erneut laden.</li><li>Mithilfe der Session-ID, welche das Tutorial in den nächsten Schritten erklären wird.</li></ol>",tut expl 13
-,,tut task 13
-diagram,Diagramm,tut head 14
-"To save a diagram to your Session-ID, you have to click the button","Um ein Diagramm zu deiner Session-ID zu speichern, musst du auf diesen Button klicken.",tut expl 14
-Save the shown diagram,Speichere das angezeigte Diagramm.,tut task 14
+diagram,Diagramm,tut head 13
+"To save a diagram to your Session-ID, you have to click the button","Um ein Diagramm zu deiner Session-ID zu speichern, musst du auf diesen Button klicken.",tut expl 13
+Save the shown diagram,Speichere das angezeigte Diagramm.,tut task 13
 Saved diagrams,Gespeicherte Diagramme,tut head 15
-Here you can see the saved diagrams to your Session-ID,"Hier siehst du, welche Diagramme du unter deiner Session-ID gespeichert hast.",tut expl 15
+Here you can see the saved diagrams to your Session-ID,"Hier siehst du, welche Diagramme du unter deiner Session-ID gespeichert hast.",tut expl 14
+,,tut task 14
+Saved diagrams,Gespeicherte Diagramme,tut head 15
+With these two buttons you can load or delete a diagram,Mit diesen beiden Buttons kannst du das Diagramm laden oder löschen.,tut expl 15
 ,,tut task 15
-Saved diagrams,Gespeicherte Diagramme,tut head 16
-With these two buttons you can load or delete a diagram,Mit diesen beiden Buttons kannst du das Diagramm laden oder löschen.,tut expl 16
+The end,Ende,tut head 16
+"We hope that this tutorial helped you. A more detailed instruction can be found here. If you still have questions, please write an Email to cosmicatweb@desy.de.","Wir hoffen, dir mit diesem Tutorial geholfen zu haben. Eine detaillierte Anleitung findest du hier. Bei Fragen, Unklarheiten oder Programmfehlern, schreibe bitte eine E-Mail an cosmicatweb@desy.de.",tut expl 16
 ,,tut task 16
-The end,Ende,tut head 17
-"We hope that this tutorial helped you. A more detailed instruction can be found here. If you still have questions, please write an Email to cosmicatweb@desy.de.","Wir hoffen, dir mit diesem Tutorial geholfen zu haben. Eine detaillierte Anleitung findest du hier. Bei Fragen, Unklarheiten oder Programmfehlern, schreibe bitte eine E-Mail an cosmicatweb@desy.de.",tut expl 17
-,,tut task 17
 Information for the Trigger Hodoscope,Informationen zum Trigger-Hodoskop,trigger hodoscope information
 Information for the CosMO-Mill,Informationen zur CosMO-Mühle,cosmo information
 Information for the Polarstern-project,Informationen zum Polarstern-Projekt,polarstern information

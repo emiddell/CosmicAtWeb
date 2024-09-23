@@ -16,7 +16,8 @@ const tutorialData = {
         headline: '{{tut head 1}}',
         explanation: '{{tut expl 1}}',
         task: '{{tut task 1}}',
-        highlightSelector: 'select[name=detaillevel]'
+        highlightSelector: 'select[name=detaillevel]',
+        validator: valueEquals('minimal')
     },
     2: {
         headline: '{{tut head 2}}',
@@ -40,7 +41,7 @@ ${[
         explanation: '{{tut expl 3}}',
         task: '{{tut task 3}}',
         highlightSelector: 'select[name=s0]',
-        validator: valueEquals('Polarstern/2017-2018_PS-nm-mt.h5:/raw/PS_mu_nm_data')
+        validator: valueEquals('Polarstern/2017_PS-nm-mt.h5:/raw/PS_mu_nm_data')
     },
     4: {
         headline: '{{tut head 4}}',
@@ -107,39 +108,33 @@ ${[
         headline: '{{tut head 12}}',
         explanation: '{{tut expl 12}}',
         task: '{{tut task 12}}',
-        highlightSelector: '#plotsettings,#loadsettings'
+        highlightSelector: '#session'
     },
     13: {
         headline: '{{tut head 13}}',
         explanation: '{{tut expl 13}}',
         task: '{{tut task 13}}',
-        highlightSelector: '#session'
+        highlightSelector: '#savePlotButton',
+        doneOnClick: true
     },
     14: {
         headline: '{{tut head 14}}',
         explanation: '{{tut expl 14}}',
         task: '{{tut task 14}}',
-        highlightSelector: '#savePlotButton',
-        doneOnClick: true
+        highlightSelector: '.savedPlotImage',
+        highlightDisabled: true
     },
     15: {
         headline: '{{tut head 15}}',
         explanation: '{{tut expl 15}}',
         task: '{{tut task 15}}',
-        highlightSelector: '.savedPlotImage',
-        highlightDisabled: true
-    },
-    16: {
-        headline: '{{tut head 16}}',
-        explanation: '{{tut expl 16}}',
-        task: '{{tut task 16}}',
         highlightSelector: '.btns',
         highlightDisabled: true
     },
-    17: {
+    16: {
         textPosition: {x: 50, y: 50},
-        headline: '{{tut head 17}}',
-        explanation: '{{tut expl 17}}',
-        task: '{{tut task 17}}'
+        headline: '{{tut head 16}}',
+        explanation: '{{tut expl 16}}',
+        task: '{{tut task 16}}'
     }
 };
