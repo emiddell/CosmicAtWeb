@@ -530,6 +530,9 @@ let example_sessions =
          * add it after the diagram name, which is the first label 
          * inside the container */
         $('.plot label:first').after(sourcesBox());
+        
+        updateDatasetFields('.plot'); // FIXME remove again dataset options that were added by sourcesBox
+
         // detach the plot template (to be added by pressing 'add plot'button)
         templatePlot = $('.plot').detach();
 
