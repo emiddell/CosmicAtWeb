@@ -520,7 +520,7 @@ let example_sessions =
     function initExpertMode() {
         console.debug('* init expert mode');
         // add handler to expertmode checkbox
-        $('select[name="detaillevel"]').click(updateHiddenFields);
+        $('select[name="detaillevel"]').change(updateHiddenFields);
         updateHiddenFields();
     }
 
